@@ -62,7 +62,7 @@ variables:
   # The default is to have the migrations folder in the same directory as the yml file
   WORKING_DIRECTORY: $(System.DefaultWorkingDirectory)
  
-  FLYWAY: 'flyway -user="$(userName)" -password="$(password)" -baselineOnMigrate=true-licenseKey=$(FLYWAY_LICENSE_KEY) -configFiles="$(WORKING_DIRECTORY)\flyway.toml" -locations="filesystem:$(WORKING_DIRECTORY)\migrations"'
+  FLYWAY: 'flyway -baselineOnMigrate=true -licenseKey=$(FLYWAY_LICENSE_KEY) -configFiles="$(WORKING_DIRECTORY)\flyway.toml" -locations="filesystem:$(WORKING_DIRECTORY)\migrations"'
   
   BUILD_NAME: 'Build'
   RELEASE_PREVIEW: 'Release-Preview.sql'
@@ -99,7 +99,7 @@ stages:
           condition: eq('${{ parameters.buildStage.executeBuild }}', 'true')
           displayName: 'Validate Migrate Scripts'
  
-        - script: '$(FLYWAY) undo info -url="$(target_database_JDBC)" -target="$(FIRST_UNDO_SCRIPT)"?'
+        - script: '$(FLYWAY) undo info -url="$(target_database_JDBC)" -target="$(FIRST_UNDO_SCRIPT)"'
           continueOnError: true
           condition: eq('${{ parameters.buildStage.executeBuild }}', 'true')
           displayName: 'Validate Undo Scripts'
@@ -168,7 +168,7 @@ stages:
           - group: ${{stage.variableGroupName}}
           - group: rg_flyway_vars
           steps:
-            - script: '$(FLYWAY) check -dryrun -changes -drift -check.failOnDrift="${{stage.failReleaseIfDriftDetected}}" -check.buildUrl="$(check_JDBC)" -check.buildUser="$(check_password)" -check.buildPassword="$(check_password) -url="$(target_database_JDBC)" -reportFilename="$(System.ArtifactsDirectory)\$(databaseName)-$(Build.BuildId)-$(DRIFT_AND_CHANGE_REPORT)"'
+            - script: '$(FLYWAY) check -dryrun -changes -drift -check.failOnDrift="${{stage.failReleaseIfDriftDetected}}" -check.buildUrl="$(check_JDBC)" -url="$(target_database_JDBC)" -reportFilename="$(System.ArtifactsDirectory)\$(databaseName)-$(Build.BuildId)-$(DRIFT_AND_CHANGE_REPORT)"'
               workingDirectory: '$(WORKING_DIRECTORY)'
               failOnStderr: true
               displayName: '$(DRIFT_AND_CHANGE_REPORT_DISPLAY_NAME)'
