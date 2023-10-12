@@ -1,3 +1,5 @@
+Once in your VM:
+
 1- Connect to github repo
 https://github.com/leganderson-dev/LevelUpFlyway
 
